@@ -17,6 +17,25 @@ const InAppUpdates = NativeModules.InAppUpdates
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return InAppUpdates.multiply(a, b);
+export enum UpdateFlow {
+  IMMEDIATE = 'IMMEDIATE',
+  FLEXIBLE = 'FLEXIBLE',
+}
+
+export function checkForUpdate(updateFlow: UpdateFlow) {
+  if (Platform.OS !== 'android') {
+    return Promise.reject(
+      new Error('This library is only available on Android.')
+    );
+  }
+
+  if (![UpdateFlow.IMMEDIATE, UpdateFlow.FLEXIBLE].includes(updateFlow)) {
+    return Promise.reject(
+      new Error(
+        'Invalid update flow. Use UpdateFlow.IMMEDIATE or UpdateFlow.FLEXIBLE.'
+      )
+    );
+  }
+
+  return InAppUpdates.checkForUpdate(updateFlow);
 }

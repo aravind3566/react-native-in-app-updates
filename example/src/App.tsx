@@ -1,25 +1,24 @@
-import { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { multiply } from 'react-native-in-app-updates';
+import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import { checkForUpdate, UpdateFlow } from 'react-native-in-app-updates';
 
 export default function App() {
-  const [result, setResult] = useState<number | undefined>();
+  const [updateAvailable, setUpdateAvailable] = useState('');
 
   useEffect(() => {
-    multiply(3, 7).then(setResult);
+    getData();
   }, []);
 
+  async function getData() {
+    try {
+      const result = await checkForUpdate(UpdateFlow.FLEXIBLE);
+      setUpdateAvailable(result);
+    } catch (e) {}
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
+    <View>
+      <Text>{updateAvailable}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
