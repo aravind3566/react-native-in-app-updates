@@ -1,4 +1,4 @@
-# react-native-in-app-updates
+![image](https://github.com/user-attachments/assets/3577ab25-cf65-4f1e-90e1-279b9fe48d3d)# react-native-in-app-updates
 
 **react-native-in-app-updates** is a lightweight and simple-to-use library for implementing Android in-app updates. Keep your app users up-to-date seamlessly with minimal effort.
 
@@ -44,6 +44,8 @@ You can choose between two update flows:
   ```javascript
   await checkForUpdate(UpdateFlow.FLEXIBLE);
   ```
+
+  ![alt text](https://developer.android.com/static/images/app-bundle/flexible_flow.png)
 
 - **Immediate:** Forces users to update the app before they can continue using it.
   ```javascript
