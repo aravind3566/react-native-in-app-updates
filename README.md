@@ -52,6 +52,8 @@ You can choose between two update flows:
   await checkForUpdate(UpdateFlow.IMMEDIATE);
   ```
 
+  ![alt text](https://developer.android.com/static/images/app-bundle/immediate_flow.png)
+
 ## Contributing
 
 See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
