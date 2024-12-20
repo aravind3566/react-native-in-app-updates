@@ -1,8 +1,15 @@
 # react-native-in-app-updates
 
-When your users keep your app up to date on their devices
+**react-native-in-app-updates** is a lightweight and simple-to-use library for implementing Android in-app updates. Keep your app users up-to-date seamlessly with minimal effort.
+
+## Features
+- Lightweight and easy to integrate.
+- Supports Android in-app update flows.
+- Flexible update options for a tailored user experience.
 
 ## Installation
+
+Install the package using npm:
 
 ```sh
 npm install react-native-in-app-updates
@@ -10,15 +17,38 @@ npm install react-native-in-app-updates
 
 ## Usage
 
+To check for updates, use the following example code:
 
-```js
-import { multiply } from 'react-native-in-app-updates';
+```javascript
+import { useEffect } from 'react';
+import { checkForUpdate, UpdateFlow } from 'react-native-in-app-updates';
 
-// ...
+useEffect(() => {
+  getData();
+}, []);
 
-const result = await multiply(3, 7);
+async function getData() {
+  try {
+    await checkForUpdate(UpdateFlow.FLEXIBLE);
+  } catch (e) {
+    // Handle error
+  }
+}
 ```
 
+### Update Flow Options
+
+You can choose between two update flows:
+
+- **Flexible:** Allows users to continue using the app while the update downloads.
+  ```javascript
+  await checkForUpdate(UpdateFlow.FLEXIBLE);
+  ```
+
+- **Immediate:** Forces users to update the app before they can continue using it.
+  ```javascript
+  await checkForUpdate(UpdateFlow.IMMEDIATE);
+  ```
 
 ## Contributing
 
@@ -28,6 +58,3 @@ See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the 
 
 MIT
 
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
