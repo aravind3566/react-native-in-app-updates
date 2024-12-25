@@ -45,17 +45,17 @@
     "prepare": "bob build",
     "release": "release-it"
   },
- "keywords": [
-  "react-native",
-  "android",
-  "in-app updates",
-  "update flow",
-  "flexible update",
-  "immediate update",
-  "app update",
-  "mobile updates",
-  "react-native-android",
-  "lightweight library"
+  "keywords": [
+    "react-native",
+    "android",
+    "in-app updates",
+    "update flow",
+    "flexible update",
+    "immediate update",
+    "app update",
+    "mobile updates",
+    "react-native-android",
+    "lightweight library"
   ],
   "repository": {
     "type": "git",
