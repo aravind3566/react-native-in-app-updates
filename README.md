@@ -45,10 +45,14 @@ You can choose between two update flows:
   await checkForUpdate(UpdateFlow.FLEXIBLE);
   ```
 
+  ![alt text](https://developer.android.com/static/images/app-bundle/flexible_flow.png)
+
 - **Immediate:** Forces users to update the app before they can continue using it.
   ```javascript
   await checkForUpdate(UpdateFlow.IMMEDIATE);
   ```
+
+  ![alt text](https://developer.android.com/static/images/app-bundle/immediate_flow.png)
 
 ## Contributing
 
