@@ -92,8 +92,4 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
             }
         }
     }
-
-    override fun onNewIntent(intent: Intent?) {
-        // Not used
-    }
 }
