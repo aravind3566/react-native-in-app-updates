@@ -1,10 +1,8 @@
 package com.inappupdates
 
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.Promise
 import android.app.Activity
+import android.content.Intent
+import com.facebook.react.bridge.*
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -13,16 +11,21 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.install.model.InstallStatus
 
 class InAppUpdatesModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+    ReactContextBaseJavaModule(reactContext), ActivityEventListener {
 
     private val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(reactContext)
     private val REQUEST_CODE_UPDATE = 1234
+    private var updatePromise: Promise? = null
 
-  override fun getName(): String {
-    return NAME
-  }
+    init {
+        reactContext.addActivityEventListener(this)
+    }
 
-  @ReactMethod
+    override fun getName(): String {
+        return "InAppUpdates"
+    }
+
+    @ReactMethod
     fun checkForUpdate(updateType: String, promise: Promise) {
         val activity = currentActivity ?: return promise.reject("NO_ACTIVITY", "No current activity")
 
@@ -50,12 +53,12 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
                 REQUEST_CODE_UPDATE
             )
 
-            // Monitor flexible update status and complete update
             appUpdateManager.registerListener { state ->
                 if (state.installStatus() == InstallStatus.DOWNLOADED) {
                     appUpdateManager.completeUpdate()
                 }
             }
+
             promise.resolve("Flexible update started")
         } else {
             promise.reject("NOT_ALLOWED", "Flexible update type not allowed")
@@ -64,19 +67,32 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
 
     private fun startImmediateUpdate(appUpdateInfo: AppUpdateInfo, activity: Activity, promise: Promise) {
         if (appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+            updatePromise = promise
+
             appUpdateManager.startUpdateFlowForResult(
                 appUpdateInfo,
                 AppUpdateType.IMMEDIATE,
                 activity,
                 REQUEST_CODE_UPDATE
             )
-            promise.resolve("Immediate update started")
         } else {
             promise.reject("NOT_ALLOWED", "Immediate update type not allowed")
         }
     }
 
-  companion object {
-    const val NAME = "InAppUpdates"
-  }
+    override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_UPDATE) {
+            updatePromise?.let {
+                if (resultCode == Activity.RESULT_OK) {
+                    it.resolve("Update flow finished")
+                } else {
+                    it.reject("UPDATE_CANCELLED", "User cancelled the update")
+                }
+                updatePromise = null
+            }
+        }
+    }
+     override fun onNewIntent(intent: Intent?) {
+        // Not used
+    }
 }
