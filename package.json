@@ -1,6 +1,6 @@
 {
   "name": "react-native-in-app-updates",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Ensure your users always stay up-to-date with the latest version of your app. This library offers seamless in-app update functionality for React Native, currently available only for Android.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
