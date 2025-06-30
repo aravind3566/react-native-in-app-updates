@@ -80,7 +80,7 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
         }
     }
 
-    override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CODE_UPDATE) {
             updatePromise?.let {
                 if (resultCode == Activity.RESULT_OK) {
@@ -92,7 +92,7 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
             }
         }
     }
-     override fun onNewIntent(intent: Intent?) {
+     override fun onNewIntent(intent: Intent) {
         // Not used
     }
 }
