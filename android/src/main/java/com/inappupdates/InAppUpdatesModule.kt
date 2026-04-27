@@ -27,7 +27,7 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun checkForUpdate(updateType: String, promise: Promise) {
-        val activity = currentActivity ?: return promise.reject("NO_ACTIVITY", "No current activity")
+        val activity = reactApplicationContext.currentActivity ?: return promise.reject("NO_ACTIVITY", "No current activity")
 
         appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
