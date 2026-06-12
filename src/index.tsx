@@ -22,7 +22,10 @@ export enum UpdateFlow {
   FLEXIBLE = 'FLEXIBLE',
 }
 
-export function checkForUpdate(updateFlow: UpdateFlow) {
+export function checkForUpdate(
+  updateFlow: UpdateFlow,
+  isMock: boolean = false
+) {
   if (Platform.OS !== 'android') {
     return Promise.reject(
       new Error('This library is only available on Android.')
@@ -37,5 +40,5 @@ export function checkForUpdate(updateFlow: UpdateFlow) {
     );
   }
 
-  return InAppUpdates.checkForUpdate(updateFlow);
+  return InAppUpdates.checkForUpdate(updateFlow, isMock);
 }

@@ -8,12 +8,15 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.appupdate.testing.FakeAppUpdateManager
 import com.google.android.play.core.install.model.InstallStatus
+
+
 
 class InAppUpdatesModule(reactContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactContext), ActivityEventListener {
 
-    private val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(reactContext)
+    private var appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(reactContext)
     private val REQUEST_CODE_UPDATE = 1234
     private var updatePromise: Promise? = null
 
@@ -25,15 +28,50 @@ class InAppUpdatesModule(reactContext: ReactApplicationContext) :
         return "InAppUpdates"
     }
 
-    @ReactMethod
-    fun checkForUpdate(updateType: String, promise: Promise) {
-        val activity = reactApplicationContext.currentActivity ?: return promise.reject("NO_ACTIVITY", "No current activity")
+    private fun getAppUpdateManager(isMock: Boolean): AppUpdateManager {
+        if (isMock) {
+            if (appUpdateManager !is FakeAppUpdateManager) {
+                val fake = FakeAppUpdateManager(reactApplicationContext)
+                fake.setUpdateAvailable(UpdateAvailability.UPDATE_AVAILABLE)
+                appUpdateManager = fake
+            }
+        } else {
+            if (appUpdateManager is FakeAppUpdateManager) {
+                appUpdateManager = AppUpdateManagerFactory.create(reactApplicationContext)
+            }
+        }
+        return appUpdateManager
+    }
 
-        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+    @ReactMethod
+    fun checkForUpdate(updateType: String, isMock: Boolean, promise: Promise) {
+        val activity = currentActivity ?: return promise.reject("NO_ACTIVITY", "No current activity")
+        val manager = getAppUpdateManager(isMock)
+
+        manager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
                 when (updateType.uppercase()) {
-                    "FLEXIBLE" -> startFlexibleUpdate(appUpdateInfo, activity, promise)
-                    "IMMEDIATE" -> startImmediateUpdate(appUpdateInfo, activity, promise)
+                    "FLEXIBLE" -> {
+                        startFlexibleUpdate(appUpdateInfo, activity, promise)
+                        if (isMock && manager is FakeAppUpdateManager) {
+                            if (manager.isConfirmationDialogVisible) {
+                                manager.userAcceptsUpdate()
+                                manager.downloadStarts()
+                                manager.downloadCompletes()
+                            }
+                        }
+                    }
+                    "IMMEDIATE" -> {
+                        startImmediateUpdate(appUpdateInfo, activity, promise)
+                        if (isMock && manager is FakeAppUpdateManager) {
+                            if (manager.isImmediateFlowVisible) {
+                                manager.userAcceptsUpdate()
+                                manager.downloadStarts()
+                                manager.downloadCompletes()
+                                manager.installCompletes()
+                            }
+                        }
+                    }
                     else -> promise.reject("INVALID_TYPE", "Update type must be 'FLEXIBLE' or 'IMMEDIATE'")
                 }
             } else {
